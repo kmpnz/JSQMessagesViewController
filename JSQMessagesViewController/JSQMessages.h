@@ -27,6 +27,8 @@
 #import "JSQMessagesCollectionViewCellOutgoing.h"
 #import "JSQMessagesTypingIndicatorFooterView.h"
 #import "JSQMessagesLoadEarlierHeaderView.h"
+#import "JSQCustomMediaView.h"
+#import "JSQHTMLMessageView.h"
 
 //  Layout
 #import "JSQMessagesBubbleSizeCalculating.h"
@@ -45,6 +47,7 @@
 #import "JSQMessage.h"
 
 #import "JSQMediaItem.h"
+#import "JSQCustomMediaItem.h"
 #import "JSQAudioMediaItem.h"
 #import "JSQPhotoMediaItem.h"
 #import "JSQLocationMediaItem.h"

@@ -27,6 +27,8 @@
 #import "JSQMessagesCollectionViewCellIncoming.h"
 #import "JSQMessagesCollectionViewCellOutgoing.h"
 
+#import "JSQCustomMediaItem.h"
+
 #import "JSQMessagesTypingIndicatorFooterView.h"
 #import "JSQMessagesLoadEarlierHeaderView.h"
 
@@ -108,7 +110,7 @@ static void JSQInstallWorkaroundForSheetPresentationIssue26295020(void) {
 }
 
 
-@interface JSQMessagesViewController () <JSQMessagesInputToolbarDelegate>
+@interface JSQMessagesViewController () <JSQMessagesInputToolbarDelegate, JSQCustomMediaItemDelegate>
 
 @property (weak, nonatomic) IBOutlet JSQMessagesCollectionView *collectionView;
 @property (strong, nonatomic) IBOutlet JSQMessagesInputToolbar *inputToolbar;
@@ -526,6 +528,14 @@ static void JSQInstallWorkaroundForSheetPresentationIssue26295020(void) {
     }
     else {
         id<JSQMessageMediaData> messageMedia = [messageItem media];
+        
+        if ([messageMedia isKindOfClass:[JSQCustomMediaItem class]]) {
+            id<JSQMessageBubbleImageDataSource> bubbleImageDataSource = [collectionView.dataSource collectionView:collectionView messageBubbleImageDataForItemAtIndexPath:indexPath];
+            cell.messageBubbleImageView.image = [bubbleImageDataSource messageBubbleImage];
+            cell.messageBubbleImageView.highlightedImage = [bubbleImageDataSource messageBubbleHighlightedImage];
+            ((JSQCustomMediaItem *)messageMedia).delegate = self;
+        }
+    
         cell.mediaView = [messageMedia mediaView] ?: [messageMedia mediaPlaceholderView];
         NSParameterAssert(cell.mediaView != nil);
     }
@@ -812,6 +822,17 @@ static void JSQInstallWorkaroundForSheetPresentationIssue26295020(void) {
     }
 
     [textView resignFirstResponder];
+}
+
+#pragma mark - Custom media item delegate
+
+- (void)customMediaItem:(JSQCustomMediaItem *)mediaItem customViewSizeChanged:(CGSize)newSize {
+    [self.collectionView.collectionViewLayout invalidateLayoutWithContext:[JSQMessagesCollectionViewFlowLayoutInvalidationContext context]];
+    [self.collectionView reloadData];
+    
+    if (self.automaticallyScrollsToMostRecentMessage) {
+        [self scrollToBottomAnimated:YES];
+    }
 }
 
 #pragma mark - Notifications

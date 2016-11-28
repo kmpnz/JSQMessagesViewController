@@ -30,6 +30,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)jsq_pinSubview:(UIView *)subview toEdge:(NSLayoutAttribute)attribute;
 
+- (void)jsq_pinSubview:(UIView *)subview toEdge:(NSLayoutAttribute)attribute constant:(CGFloat)constant;
+
 /**
  *  Pins all edges of the specified subview to the receiver.
  *

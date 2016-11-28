@@ -22,13 +22,18 @@
 
 - (void)jsq_pinSubview:(UIView *)subview toEdge:(NSLayoutAttribute)attribute
 {
+    return [self jsq_pinSubview:subview toEdge:attribute constant:0];
+}
+
+- (void)jsq_pinSubview:(UIView *)subview toEdge:(NSLayoutAttribute)attribute constant:(CGFloat)constant {
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self
                                                      attribute:attribute
                                                      relatedBy:NSLayoutRelationEqual
                                                         toItem:subview
                                                      attribute:attribute
                                                     multiplier:1.0f
-                                                      constant:0.0f]];
+                                                      constant:constant]];
+
 }
 
 - (void)jsq_pinAllEdgesOfSubview:(UIView *)subview
