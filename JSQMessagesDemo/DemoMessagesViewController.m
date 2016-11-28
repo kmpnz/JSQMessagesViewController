@@ -575,7 +575,7 @@
         }
     }
 
-    cell.accessoryButton.hidden = ![self shouldShowAccessoryButtonForMessage:msg];
+//    cell.accessoryButton.hidden = ![self shouldShowAccessoryButtonForMessage:msg];
     
     return cell;
 }
