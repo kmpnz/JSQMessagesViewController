@@ -19,6 +19,7 @@
 #import "DemoModelData.h"
 
 #import "NSUserDefaults+DemoSettings.h"
+#import "DemoCustomButtomMessageMediaView.h"
 
 
 /**
@@ -132,6 +133,8 @@
     
     [self addPhotoMediaMessage];
     [self addAudioMediaMessage];
+    [self addHTMLMediaMessage];
+    [self addCustomButtonMessage];
     
     /**
      *  Setting to load extra messages for testing/demo
@@ -201,5 +204,38 @@
                                                          media:videoItem];
     [self.messages addObject:videoMessage];
 }
+
+- (void)addVideoMediaMessageWithThumbnail
+{
+    // don't have a real video, just pretending
+    NSURL *videoURL = [NSURL URLWithString:@"file://"];
+    
+    JSQVideoMediaItem *videoItem = [[JSQVideoMediaItem alloc] initWithFileURL:videoURL isReadyToPlay:YES thumbnailImage:[UIImage imageNamed:@"goldengate"]];
+    JSQMessage *videoMessage = [JSQMessage messageWithSenderId:kJSQDemoAvatarIdSquires
+                                                   displayName:kJSQDemoAvatarDisplayNameSquires
+                                                         media:videoItem];
+    [self.messages addObject:videoMessage];
+}
+
+- (void)addHTMLMediaMessage
+{
+    NSString *htmlString =
+    @"<html><body><div>"
+    @"<p>You can even compose messages using HTML.</p>"
+    @"<p>Sometimes it's <span style=\"text-decoration: line-through\">much</span> <i>easier</i> than attributed text.</p>"
+    @"</div></body></html>";
+    
+    JSQHTMLMessageView *htmlView = [[JSQHTMLMessageView alloc] init];
+    [htmlView.webView loadHTMLString:htmlString baseURL:nil];
+    
+    [self.messages addObject:[htmlView generateMessageWithSenderId:kJSQDemoAvatarIdSquires displayName:kJSQDemoAvatarDisplayNameSquires]];
+}
+
+- (void)addCustomButtonMessage {
+    DemoCustomButtomMessageMediaView *view = [[DemoCustomButtomMessageMediaView alloc] initWithFrame:CGRectMake(0, 0, 250, 80)];
+    
+    [self.messages addObject:[view generateMessageWithSenderId:kJSQDemoAvatarIdCook displayName:kJSQDemoAvatarDisplayNameCook]];
+}
+
 
 @end

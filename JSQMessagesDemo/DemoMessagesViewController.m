@@ -244,6 +244,12 @@
                 
                 newMediaData = audioItemCopy;
             }
+            else if ([copyMediaData isKindOfClass:[JSQCustomMediaItem class]]) {
+                JSQCustomMediaItem *customItemCopy = [((JSQCustomMediaItem *)copyMediaData) copy];
+                customItemCopy.appliesMediaViewMaskAsOutgoing = NO;
+                
+                newMediaData = customItemCopy;
+            }
             else {
                 NSLog(@"%s error: unrecognized media item", __PRETTY_FUNCTION__);
             }
@@ -357,7 +363,7 @@
                                                        delegate:self
                                               cancelButtonTitle:@"Cancel"
                                          destructiveButtonTitle:nil
-                                              otherButtonTitles:@"Send photo", @"Send location", @"Send video", @"Send audio", nil];
+                                              otherButtonTitles:NSLocalizedString(@"Send photo", nil), NSLocalizedString(@"Send location", nil), NSLocalizedString(@"Send video", nil), NSLocalizedString(@"Send video thumbnail", nil), NSLocalizedString(@"Send audio", nil), NSLocalizedString(@"Send html", nil), nil];
     
     [sheet showFromToolbar:self.inputToolbar];
 }
@@ -390,6 +396,10 @@
             
         case 3:
             [self.demoData addAudioMediaMessage];
+            break;
+            
+        case 5:
+            [self.demoData addHTMLMediaMessage];
             break;
     }
     
@@ -556,6 +566,16 @@
         cell.textView.linkTextAttributes = @{ NSForegroundColorAttributeName : cell.textView.textColor,
                                               NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid) };
     }
+    else if ([msg.media isKindOfClass:[JSQCustomMediaItem class]]) {
+        if ([msg.senderId isEqualToString:self.senderId]) {
+            ((JSQCustomMediaItem *)msg.media).preferredTextColor = [UIColor blackColor];
+        }
+        else {
+            ((JSQCustomMediaItem *)msg.media).preferredTextColor = [UIColor whiteColor];
+        }
+    }
+
+    cell.accessoryButton.hidden = ![self shouldShowAccessoryButtonForMessage:msg];
     
     return cell;
 }

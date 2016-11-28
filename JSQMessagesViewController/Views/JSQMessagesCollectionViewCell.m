@@ -21,6 +21,7 @@
 #import "JSQMessagesCollectionViewCellIncoming.h"
 #import "JSQMessagesCollectionViewCellOutgoing.h"
 #import "JSQMessagesCollectionViewLayoutAttributes.h"
+#import "JSQCustomMediaView.h"
 
 #import "UIView+JSQMessages.h"
 #import "UIDevice+JSQMessages.h"
@@ -314,7 +315,11 @@ static NSMutableSet *jsqMessagesCollectionViewCellActions = nil;
 
 - (void)setMediaView:(UIView *)mediaView
 {
-    [self.messageBubbleImageView removeFromSuperview];
+    BOOL includeMessageBubble = [mediaView isKindOfClass:[JSQCustomMediaView class]] && ((JSQCustomMediaView *)mediaView).includeMessageBubble;
+    
+    // Hiding the bubble image view since it may need to be included the next time the cell is reused
+    self.messageBubbleImageView.hidden = !includeMessageBubble;
+    
     [self.textView removeFromSuperview];
 
     [mediaView setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -323,14 +328,21 @@ static NSMutableSet *jsqMessagesCollectionViewCellActions = nil;
     [self.messageBubbleContainerView addSubview:mediaView];
     [self.messageBubbleContainerView jsq_pinAllEdgesOfSubview:mediaView];
     _mediaView = mediaView;
-
+    
     //  because of cell re-use (and caching media views, if using built-in library media item)
     //  we may have dequeued a cell with a media view and add this one on top
     //  thus, remove any additional subviews hidden behind the new media view
     dispatch_async(dispatch_get_main_queue(), ^{
         for (NSUInteger i = 0; i < self.messageBubbleContainerView.subviews.count; i++) {
-            if (self.messageBubbleContainerView.subviews[i] != _mediaView) {
-                [self.messageBubbleContainerView.subviews[i] removeFromSuperview];
+            UIView *subview = self.messageBubbleContainerView.subviews[i];
+            if (subview.hidden) {
+                continue;
+            }
+            if (includeMessageBubble && subview != _mediaView && subview != self.messageBubbleImageView) {
+                [subview removeFromSuperview];
+            }
+            else if (includeMessageBubble == NO && subview != _mediaView) {
+                [subview removeFromSuperview];
             }
         }
     });
